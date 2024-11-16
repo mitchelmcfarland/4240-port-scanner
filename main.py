@@ -15,11 +15,15 @@ def port_scanner(target, ports):
 
     for port in ports:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(1)
-            result = s.connect_ex((target_ip, port))
+            s.settimeout(1) 
+            result = s.connect_ex((target_ip, port)) 
 
             if result == 0:
-                print(f"Port {port} is open.")
+                try:
+                    service = socket.getservbyport(port, "tcp")
+                except OSError:
+                    service = "Unknown service"
+                print(f"Port {port} is open. Service: {service}")
 
     end_time = datetime.now()
     duration = end_time - start_time
