@@ -1,9 +1,9 @@
 import socket
 from datetime import datetime
 
-def port_scanner(target, port_range):
+def port_scanner(target, ports):
     print(f"\nStarting scan on target: {target}")
-    print(f"Scanning ports {port_range[0]} to {port_range[1]}\n")
+    print(f"Scanning specified ports: {ports}\n")
 
     try:
         target_ip = socket.gethostbyname(target)
@@ -13,10 +13,10 @@ def port_scanner(target, port_range):
 
     start_time = datetime.now()
 
-    for port in range(port_range[0], port_range[1] + 1):
+    for port in ports:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.settimeout(1)
-            result = s.connect_ex((target_ip, port)) 
+            result = s.connect_ex((target_ip, port))
 
             if result == 0:
                 print(f"Port {port} is open.")
@@ -29,14 +29,16 @@ if __name__ == "__main__":
     print("--- Port Scanner ---")
 
     target = input("Enter the target hostname or IP: ").strip()
-    port_range = (1, 1024) 
+    default_ports = [21, 22, 23, 25, 53, 80, 443, 8080, 8443, 137, 139, 445, 1433, 1434, 3306, 3389]
 
     try:
-        port_range_input = input("Enter port range (e.g., 1-1024) or press Enter to use default: ").strip()
-        if port_range_input:
-            start_port, end_port = map(int, port_range_input.split('-'))
-            port_range = (start_port, end_port)
+        ports_input = input(f"Enter ports to scan (comma-separated) or press Enter to use default ({default_ports}): ").strip()
+        if ports_input:
+            ports = list(map(int, ports_input.split(',')))
+        else:
+            ports = default_ports
     except ValueError:
-        print("Invalid port range input. Using default range.")
+        print("Invalid input. Using default ports.")
+        ports = default_ports
 
-    port_scanner(target, port_range)
+    port_scanner(target, ports)
