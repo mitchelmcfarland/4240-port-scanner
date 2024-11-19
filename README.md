@@ -1,10 +1,20 @@
 # About the Project 
-Port scanning is a network security technique that reveals which ports are open along with other additional inforamtion. 
-This project implements a simple TCP connect scan that checks if a port is open. Additionally, it can get the following information: 
-- Service running on the port (EX: http, ssh, etc.)
-- Software banner for the service running on the port 
-- Common Vulnerabilites and Exposures (CVE) based on the banner for the port 
-This project was created and tested using Ubuntu 22.04.4 VMs. 
+This is a simple port scanner created for educational purposes using Ubuntu 22.04.4 VMs. It gets the following information 
+- What ports are open 
+- What service running on an open port (EX: http, ssh, etc.)
+- Software banner from the service running 
+- Common Vulnerabilites and Exposures (CVE) based on the banner
+Please use NMap or other more sophisticated port scanners if you need a good port scanner. 
+
+## Port Scanners 
+Port scanning is a network security technique that reveals which ports are open along with other additional inforamtion. System admins use port scanning to check their own networks and security policies for vulnerabilities. Attackers can also use port scans to gain reconnaissance about the inner workings of a network if system admins are not diligent. 
+There a several different types of port scanners. This project uses a TCP connect scan.  
+
+## Banner Grabbing 
+Banner grabbing reveals information like the name and version of the network host. 
+
+## Common Vulnerabilites and Exposures (CVE)
+Common Vulnerabilites and Exposures (CVE) is a list of known vulnerabilites. This project uses information gained from banner grabbing to seach the NIST's CVE API (https://nvd.nist.gov/developers/vulnerabilities). Currently, it is really only effective when the service is http or OpenSSH is used. 
 
 # Getting Started 
 ## Prerequisites 
@@ -26,7 +36,7 @@ sudo docker run -p 80:80 vulnerables/web-dvwa
 ```
 
 # Usage 
-*Only use this port scanner on computers you have permission to scan.* This is for educational purposes only, please use NMap or other more sophisticated port scanners if you need a good port scanner. 
+*Only use this port scanner on computers you have permission to scan.* 
 
 ## Command Line Arguments 
 This scanner has the following options 
@@ -114,6 +124,8 @@ Port 80 is open.
 Scan completed in: 0:00:29.131985. Scanned 131 ports, found 2 open.
 ```
 
-# Acknowledgements 
+# Acknowledgements/ References
+- https://nmap.org/ 
 - https://nvd.nist.gov/developers/vulnerabilities
 - https://hub.docker.com/r/vulnerables/web-dvwa 
+- https://www.geeksforgeeks.org/what-is-banner-grabbing/
