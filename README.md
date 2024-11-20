@@ -137,7 +137,7 @@ Scan completed in: 0:00:29.131985. Scanned 131 ports, found 2 open.
 - Update port scan to check if port is open, closed, or filtered 
 - Update grab_banner so it works for more types of services 
 - Update get_service so it can more accurately get port services 
-- Update check_cve to use different parameters than keywordSearch. Port scan results are missing CVEs that SHOULD be there.
+- Update CVE look up and banner parsing to use Common Platform Enumeration (CPE) instead of keywords. Right now CVE look up is missing a few CVE's that should be there.
 
 # Acknowledgements/ References
 - https://nmap.org/ 
