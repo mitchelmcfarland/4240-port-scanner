@@ -8,7 +8,7 @@ Please use NMap or other more sophisticated port scanners if you need a good por
 
 ## Port Scanners 
 Port scanning is a network security technique that reveals which ports are open along with other additional inforamtion. System admins use port scanning to check their own networks and security policies for vulnerabilities. Attackers can also use port scans to gain reconnaissance about the inner workings of a network if system admins are not diligent. 
-There a several different types of port scanners. This project uses a TCP connect scan.  
+There a several different types of port scanners. This project uses a vanilla scan.  
 
 ## Services 
 This project uses socket.getservbyport() which returns the service name associated with a port number. 
@@ -132,6 +132,12 @@ Port 80 is open.
 
 Scan completed in: 0:00:29.131985. Scanned 131 ports, found 2 open.
 ```
+
+# TODOs 
+- Update port scan to check if port is open, closed, or filtered 
+- Update grab_banner so it works for more types of services 
+- Update get_service so it can more accurately get port services 
+- Update check_cve to use different parameters than keywordSearch. Port scan results are missing CVEs that SHOULD be there.
 
 # Acknowledgements/ References
 - https://nmap.org/ 
