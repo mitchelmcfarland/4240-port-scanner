@@ -12,9 +12,10 @@ REVC_SIZE = 1024
 MAX_CVES = 5
 
 MAX_THREADS = 16
-open_ports = 0 
+open_ports = 0
 open_lock = threading.Lock()
 print_lock = threading.Lock()
+request_lock = threading.Lock()
 
 def scan_port_wrapper(port):
     if scan_port(port):
@@ -26,23 +27,25 @@ def scan_port_wrapper(port):
 def get_service(s, port):
     try:
         return socket.getservbyport(port)
-    
+
     except OSError:
         return "Unknown service"
 
 #TODO add support for more services
-def grab_banner(s, port, service):
+def grab_banner(s, service):
     try:
         if service == 'http' or service == 'https':
             s.send(b'GET /\n')
-            result = s.recv(REVC_SIZE).decode().strip().split('\n')[2]
-            exp = re.search(r"(\S+)/([\d\.]+)", result)
-            return f"{exp.group(1)} {exp.group(2)}"        
+            banner = s.recv(REVC_SIZE).decode().strip().split('\n')[2]
+            exp = re.search(r"(\S+)/([\d\.]+)", banner)
+            return [banner, f"{exp.group(1)} {exp.group(2)}"] 
+        
         else:
-            return s.recv(REVC_SIZE).decode().strip()
-    
+            banner = s.recv(REVC_SIZE).decode().strip()
+            return [banner, None]
+
     except Exception as e:
-        return f"ERROR grabbing banner, \"{e}\""
+        return [f"ERROR grabbing banner, \"{e}\"", None]
 
 def check_cves(keywords):
     try:
@@ -53,7 +56,9 @@ def check_cves(keywords):
             "resultsPerPage": MAX_CVES
         }
 
-        response = requests.get(url, params=params)
+        with request_lock:
+            response = requests.get(url, params=params)
+
         if response.status_code == 200:
             result = response.json()
             cves = ""
@@ -81,19 +86,23 @@ def scan_port(port):
             return False
 
         message = f"Port {port} is open."
-        
+
         if args.s or args.b or args.v:
             service = get_service(s, port)
             if args.s:
                 message += f"\n\tService: {service}"
 
             if args.b or args.c:
-                banner = grab_banner(s, port, service)
+                banner = grab_banner(s, service)
                 if args.b:
-                    message += f"\n\tBanner: {banner}"
+                    message += f"\n\tBanner: {banner[0]}"
 
                 if args.c:
-                    message += f"\n\tCVE(s): {check_cves(banner)}."
+                    message += f"\n\tCVE(s): "
+                    if banner[1] == None:
+                        message += "Not enough info"
+                    else: 
+                        message += f"{check_cves(banner[1])}."
 
         with print_lock:
             print(message)
@@ -102,20 +111,19 @@ def scan_port(port):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-a', action='store_true', help='Flag for all') #does all of the below 
+    parser.add_argument('-a', action='store_true', help='Get service, grab banner, and check for CVEs') #does all of the below
     parser.add_argument('-s', action='store_true', help='Get service running on port') #get's what service is running on the port
-    parser.add_argument('-b', action='store_true', help='Banner grabbing') #get software banner information from the port 
-    parser.add_argument('-c', action='store_true', help='Check for CVEs (Warning: will considerably slow down scan)') #checks Common Vulnerabilites and Exposures (CVE) 
-    parser.add_argument('-v', action='store_true', help='Verbose mode (prints closed ports)') #print if a port is closed 
+    parser.add_argument('-b', action='store_true', help='Banner grabbing') #get software banner information from the port
+    parser.add_argument('-c', action='store_true', help='Check for CVEs (Warning: will considerably slow down scan)') #checks Common Vulnerabilites and Exposures (CVE)
+    parser.add_argument('-v', action='store_true', help='Verbose mode (prints closed ports)') #print if a port is closed
 
-    global args 
+    global args
     args = parser.parse_args()
 
     if args.a:
         args.s = True
         args.b = True
         args.c = True
-        args.v = True
 
     print("--- Port Scanner ---")
 

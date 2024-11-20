@@ -10,8 +10,11 @@ Please use NMap or other more sophisticated port scanners if you need a good por
 Port scanning is a network security technique that reveals which ports are open along with other additional inforamtion. System admins use port scanning to check their own networks and security policies for vulnerabilities. Attackers can also use port scans to gain reconnaissance about the inner workings of a network if system admins are not diligent. 
 There a several different types of port scanners. This project uses a TCP connect scan.  
 
+## Services 
+This project uses socket.getservbyport() which returns the service name associated with a port number. 
+
 ## Banner Grabbing 
-Banner grabbing reveals information like the name and version of the network host. 
+Banner grabbing reveals information like the name and version of the network host. This project uses active banner grabbing to ideally isolate the name and version of the network host. 
 
 ## Common Vulnerabilites and Exposures (CVE)
 Common Vulnerabilites and Exposures (CVE) is a list of known vulnerabilites. This project uses information gained from banner grabbing to seach the NIST's CVE API (https://nvd.nist.gov/developers/vulnerabilities). Currently, it is really only effective when the service is http or OpenSSH is used. 
@@ -27,6 +30,9 @@ Please make sure you have python installed and the following Python modules
 - requests
 
 ## Optional 
+You can open ports using nc to test the port scanners ability to check if a port is open using
+`sudo nc -lk 100` 
+### Damn Vulnerable Web Application (DVWA)
 You can set up Damn Vulnerable Web Application (DVWA) to test the port scanner. Do the following to create and start DVWA on port 80: 
 ```bash
 sudo apt update
@@ -34,6 +40,9 @@ sudo apt install docker.io docker-compose -y
 sudo docker pull vulnerables/web-dvwa
 sudo docker run -p 80:80 vulnerables/web-dvwa
 ```
+### Vulhub 
+Vulhub has multiple pre-built vulnerable docker enviornments that you can also use to test the port scanner. 
+To set up, please following the instructions at: https://github.com/vulhub/vulhub 
 
 # Usage 
 *Only use this port scanner on computers you have permission to scan.* 
@@ -129,3 +138,4 @@ Scan completed in: 0:00:29.131985. Scanned 131 ports, found 2 open.
 - https://nvd.nist.gov/developers/vulnerabilities
 - https://hub.docker.com/r/vulnerables/web-dvwa 
 - https://www.geeksforgeeks.org/what-is-banner-grabbing/
+- https://github.com/vulhub/vulhub 
