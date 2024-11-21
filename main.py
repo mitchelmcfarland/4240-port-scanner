@@ -42,7 +42,13 @@ def grab_banner(s, service):
         
         else:
             banner = s.recv(REVC_SIZE).decode().strip()
-            return [banner, None]
+
+            if service == 'ssh':
+                exp = re.search(r"SSH-\S+-(\S+)_([\d\.p]+)", banner)
+                return [banner, f"{exp.group(1)} {exp.group(2)}"]
+
+            else:
+                return [banner, None]
 
     except Exception as e:
         return [f"ERROR grabbing banner, \"{e}\"", None]
