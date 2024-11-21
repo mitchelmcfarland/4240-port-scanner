@@ -93,7 +93,7 @@ def scan_port(port):
 
         message = f"Port {port} is open."
 
-        if args.s or args.b or args.v:
+        if args.s or args.b or args.c:
             service = get_service(s, port)
             if args.s:
                 message += f"\n\tService: {service}"
